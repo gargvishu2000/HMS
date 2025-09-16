@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt"
 
 const userSchema = mongoose.Schema({
     username: {
         type: String,
         required: true,
-        minLenght: 3,
-        maxLength: 50
+        minlength: 3,
+        maxlength: 50
     },
     email: {
         type: String,
@@ -28,6 +29,18 @@ const userSchema = mongoose.Schema({
         default: Date.now()
     },
     updatedAt: { type:Date, default:Date.now() }
+})
+
+userSchema.pre('save', async function(next){
+    if(!this.isModified("password")) return next(); //if already modified.
+
+    try {
+    
+        this.password = await bcrypt.hash(this.password,10)
+        next()
+    } catch (err) {
+        next(err)
+    }
 })
 
 const User = mongoose.model('User', userSchema);
