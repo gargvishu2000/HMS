@@ -1,6 +1,7 @@
 import User from "../models/user.schema.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+import { sendEmail } from "../config/helper-function.js";
 
 export const signUp = async(req,res)=>{
     
@@ -8,6 +9,7 @@ export const signUp = async(req,res)=>{
     const newUser = User({username,email,password,type,mobile});
     try {
         await newUser.save();
+        sendEmail(email,'Welcome to the platform', 'You have signed up successfully.')
         return res.status(201).json({message: "User Created Successfully"})
     } catch (error) {
         return res.status(400).json({message:error})
